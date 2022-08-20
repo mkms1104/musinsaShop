@@ -6,10 +6,18 @@ import com.musinsa.shop.domain.category.CategoryMapper;
 import com.musinsa.shop.domain.category.CategoryRepository;
 import com.musinsa.shop.webapi.exception.NoDataFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import javax.validation.ValidationException;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -17,19 +25,29 @@ import java.util.Optional;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
 
-    public CategoryDto getCategory(Long id) {
+    public Page<CategoryDto> getCategory(Long id, Pageable pageable) {
         Optional<Category> findCategoryOp = categoryRepository.findById(id);
-        Category category = findCategoryOp.orElseThrow(() -> { throw new NoDataFoundException(id); });
-        return CategoryMapper.INSTANCE.toDto(category);
-    }
+        if(findCategoryOp.isEmpty()) throw new NoDataFoundException(id);
 
-    @Transactional
-    public void deleteCategory(Long id) {
-        categoryRepository.deleteById(id);
+        Page<Category> findCategoriesWithPage = categoryRepository.findByParentId(id, pageable);
+        List<CategoryDto> categories = findCategoriesWithPage.stream().map(v -> CategoryMapper.INSTANCE.toDto(v)).collect(Collectors.toList());
+        return new PageImpl<>(categories, pageable, findCategoriesWithPage.getTotalPages());
     }
 
     @Transactional
     public Long createCategory(CategoryDto categoryDto) {
+        Long parentId = categoryDto.getParentId();
+        this.existCategory(categoryDto.getDepth(), categoryDto.getName());
+
+        if(!categoryDto.isRoot() && Objects.isNull(parentId)) {
+            throw new ValidationException("parentId is null");
+        }
+
+        if(!Objects.isNull(parentId)) {
+            Optional<Category> parentCategoryOp = categoryRepository.findById(parentId);
+            if(parentCategoryOp.isEmpty()) throw new ValidationException("parentId is not exist");
+        }
+
         Category category = CategoryMapper.INSTANCE.toEntity(categoryDto);
         Category saved = categoryRepository.save(category);
         return saved.getId();
@@ -39,6 +57,21 @@ public class CategoryService {
     public void updateCategoryName(Long id, CategoryDto categoryDto) {
         Optional<Category> findCategoryOp = categoryRepository.findById(id);
         Category category = findCategoryOp.orElseThrow(() -> { throw new NoDataFoundException(id); });
+        this.existCategory(category.getDepth(), categoryDto.getName());
+
         category.updateCategoryName(categoryDto.getName());
+    }
+
+    @Transactional
+    public void deleteCategory(Long id) {
+        Optional<Category> findCategoryOp = categoryRepository.findById(id);
+        Category category = findCategoryOp.orElseThrow(() -> { throw new NoDataFoundException(id); });
+        categoryRepository.deleteById(id);
+        categoryRepository.deleteByParentId(category.getId());
+    }
+
+    private void existCategory(int depth, String categoryName) {
+        Optional<Category> findUniqueCategoryOp = categoryRepository.findByDepthAndName(depth, categoryName);
+        if(findUniqueCategoryOp.isPresent()) throw new ValidationException("category name is duplicated");
     }
 }

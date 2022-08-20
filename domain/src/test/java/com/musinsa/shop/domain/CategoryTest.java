@@ -10,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 class CategoryTest {
@@ -18,7 +17,7 @@ class CategoryTest {
 
     @Test
     @DisplayName("기본적인 CRUD 동작을 확인한다.")
-    public void basicCrudTest() {
+    public void basicCrud() {
         assertAll(
             () -> {
                 Optional<Category> findCategoryOp = categoryRepository.findById(123123L);
@@ -44,5 +43,14 @@ class CategoryTest {
                 assertEquals("하의", categoryRepository.findAll().get(0).getName());
             }
         );
+    }
+
+    @Test
+    @DisplayName("queryCreationFromMethodNames 동작을 확인한다.")
+    public void queryCreationFromMethodNames() {
+        Category category01 = categoryRepository.save(new Category("상의", 1, null));
+        categoryRepository.save(new Category("반소매 티셔츠", 2, category01.getId()));
+        categoryRepository.save(new Category("셔츠/블라우스", 2, category01.getId()));
+        categoryRepository.deleteByParentId(category01.getId());
     }
 }
