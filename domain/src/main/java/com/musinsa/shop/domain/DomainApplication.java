@@ -1,13 +1,11 @@
-package com.demo.musinsashop;
+package com.musinsa.shop.domain;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MusinsaShopApplication {
-
+public class DomainApplication {
     public static void main(String[] args) {
-        SpringApplication.run(MusinsaShopApplication.class, args);
+        SpringApplication.run(DomainApplication.class, args);
     }
-
 }
