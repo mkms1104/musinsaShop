@@ -7,11 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -19,16 +15,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@TestPropertySource(properties = {
-        "spring.jpa.properties.hibernate.format_sql=true",
-        "spring.jpa.properties.hibernate.show_sql=true"
-})
-@AutoConfigureMockMvc
-@SpringBootTest
-public class UpdateCategoryApiTest {
-    @Autowired
-    private MockMvc mockMvc;
+public class UpdateCategoryApiTest extends MockMvcTestSupport {
     @Autowired private CategoryRepository categoryRepository;
+
+    private final String URI = "/api/v1/mshop/categories/{category_id}";
 
     @BeforeEach
     public void init() {
@@ -58,9 +48,8 @@ public class UpdateCategoryApiTest {
 
         //when & then
         mockMvc.perform(
-                    patch("/api/v1/mshop/categories/{category_id}", categoryId)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(jsonObject.toString())
+                    patch(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonObject.toString())
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -76,9 +65,8 @@ public class UpdateCategoryApiTest {
 
         //when & then
         mockMvc.perform(
-                        patch("/api/v1/mshop/categories/{category_id}", categoryId)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonObject.toString())
+                    patch(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonObject.toString())
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -97,9 +85,8 @@ public class UpdateCategoryApiTest {
 
         //when & then
         mockMvc.perform(
-                        patch("/api/v1/mshop/categories/{category_id}", 1)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonObject.toString())
+                    patch(URI, 1).contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonObject.toString())
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -118,9 +105,8 @@ public class UpdateCategoryApiTest {
 
         //when & then
         mockMvc.perform(
-                        patch("/api/v1/mshop/categories/{category_id}", categoryId)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonObject.toString())
+                    patch(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonObject.toString())
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -137,15 +123,14 @@ public class UpdateCategoryApiTest {
 
         //when & then
         mockMvc.perform(
-                        patch("/api/v1/mshop/categories/{category_id}", categoryId)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonObject.toString())
+                    patch(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonObject.toString())
 
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorType", is("NO_DATA_FOUND")))
-                .andExpect(jsonPath("$.msg", is("no data found exception with " + categoryId)));
+                .andExpect(jsonPath("$.msg", is("no data found exception with " + categoryId)))
         ;
     }
 }

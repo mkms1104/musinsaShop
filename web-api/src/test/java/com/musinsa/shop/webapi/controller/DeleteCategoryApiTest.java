@@ -6,13 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,16 +18,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@TestPropertySource(properties = {
-        "spring.jpa.properties.hibernate.format_sql=true",
-        "spring.jpa.properties.hibernate.show_sql=true"
-})
-@AutoConfigureMockMvc
-@SpringBootTest
-public class DeleteCategoryApiTest {
-    @Autowired
-    private MockMvc mockMvc;
+public class DeleteCategoryApiTest extends MockMvcTestSupport {
     @Autowired private CategoryRepository categoryRepository;
+
+    private final String URI = "/api/v1/mshop/categories/{category_id}";
 
     @BeforeEach
     public void init() {
@@ -59,8 +49,7 @@ public class DeleteCategoryApiTest {
 
         //when & then
         mockMvc.perform(
-                        delete("/api/v1/mshop/categories/{category_id}", categoryId)
-                                .contentType(MediaType.APPLICATION_JSON)
+                    delete(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -78,8 +67,7 @@ public class DeleteCategoryApiTest {
 
         //when
         mockMvc.perform(
-                        delete("/api/v1/mshop/categories/{category_id}", categoryId)
-                                .contentType(MediaType.APPLICATION_JSON)
+                    delete(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -98,13 +86,12 @@ public class DeleteCategoryApiTest {
 
         //when & then
         mockMvc.perform(
-                        delete("/api/v1/mshop/categories/{category_id}", categoryId)
-                                .contentType(MediaType.APPLICATION_JSON)
+                    delete(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorType", is("NO_DATA_FOUND")))
-                .andExpect(jsonPath("$.msg", is("no data found exception with " + categoryId)));
+                .andExpect(jsonPath("$.msg", is("no data found exception with " + categoryId)))
         ;
     }
 }

@@ -6,11 +6,7 @@ import com.musinsa.shop.domain.category.CategoryRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -18,15 +14,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@TestPropertySource(properties = {
-        "spring.jpa.properties.hibernate.format_sql=true",
-        "spring.jpa.properties.hibernate.show_sql=true"
-})
-@AutoConfigureMockMvc
-@SpringBootTest
-public class CreateCategoryApiTest {
-    @Autowired private MockMvc mockMvc;
+public class CreateMockMvcTest extends MockMvcTestSupport {
     @Autowired private CategoryRepository categoryRepository;
+    private final String URI = "/api/v1/mshop/categories";
 
     @Test
     @DisplayName("카테고리 정상 등록")
@@ -38,9 +28,8 @@ public class CreateCategoryApiTest {
 
         //when & then
         mockMvc.perform(
-                        post("/api/v1/mshop/categories")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonObject.toString())
+                    post(URI).contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonObject.toString())
                 )
                 .andDo(print())
                 .andExpect(status().isCreated())
@@ -59,9 +48,8 @@ public class CreateCategoryApiTest {
 
                     //when & then
                     mockMvc.perform(
-                                    post("/api/v1/mshop/categories")
-                                            .contentType(MediaType.APPLICATION_JSON)
-                                            .content(jsonObject.toString())
+                                post(URI).contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonObject.toString())
                             )
                             .andDo(print())
                             .andExpect(status().isBadRequest())
@@ -77,9 +65,8 @@ public class CreateCategoryApiTest {
 
                     //when & then
                     mockMvc.perform(
-                                    post("/api/v1/mshop/categories")
-                                            .contentType(MediaType.APPLICATION_JSON)
-                                            .content(jsonObject.toString())
+                                post(URI).contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonObject.toString())
                             )
                             .andDo(print())
                             .andExpect(status().isBadRequest())
@@ -101,9 +88,8 @@ public class CreateCategoryApiTest {
 
        //when & then
        mockMvc.perform(
-                       post("/api/v1/mshop/categories")
-                               .contentType(MediaType.APPLICATION_JSON)
-                               .content(jsonObject.toString())
+                   post(URI).contentType(MediaType.APPLICATION_JSON)
+                   .content(jsonObject.toString())
                )
                .andDo(print())
                .andExpect(status().isBadRequest())
@@ -122,9 +108,8 @@ public class CreateCategoryApiTest {
 
        //when & then
        mockMvc.perform(
-                       post("/api/v1/mshop/categories")
-                               .contentType(MediaType.APPLICATION_JSON)
-                               .content(jsonObject.toString())
+                   post(URI).contentType(MediaType.APPLICATION_JSON)
+                   .content(jsonObject.toString())
                )
                .andDo(print())
                .andExpect(status().isBadRequest())
@@ -144,9 +129,8 @@ public class CreateCategoryApiTest {
 
         //when & then
         mockMvc.perform(
-                        post("/api/v1/mshop/categories")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonObject.toString())
+                    post(URI).contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonObject.toString())
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -166,9 +150,8 @@ public class CreateCategoryApiTest {
 
         //when & then
         mockMvc.perform(
-                        post("/api/v1/mshop/categories")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonObject.toString())
+                    post(URI).contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonObject.toString())
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest())
