@@ -23,17 +23,17 @@ public class UpdateCategoryApiTest extends MockMvcTestSupport {
     @BeforeEach
     public void init() {
         // ID = 1
-        Category category01 = categoryRepository.save(new Category("상의", 1, null));
+        Category category01 = categoryRepository.save(new Category("상의", 1));
         categoryRepository.save(new Category("반소매 티셔츠", 2, category01.getId()));
         categoryRepository.save(new Category("셔츠/블라우스", 2, category01.getId()));
 
         // ID = 4
-        Category category02 = categoryRepository.save(new Category("바지", 1, null));
+        Category category02 = categoryRepository.save(new Category("바지", 1));
         categoryRepository.save(new Category("데님 팬츠", 2, category02.getId()));
         categoryRepository.save(new Category("코튼 팬츠", 2, category02.getId()));
 
         // ID = 7
-        Category category03 = categoryRepository.save(new Category("아우터", 1, null));
+        Category category03 = categoryRepository.save(new Category("아우터", 1));
         categoryRepository.save(new Category("카디건", 2, category03.getId()));
         categoryRepository.save(new Category("겨울 싱글 코트", 2, category03.getId()));
     }

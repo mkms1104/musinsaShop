@@ -29,12 +29,12 @@ public class SearchCategoryApiTest extends MockMvcTestSupport {
     @BeforeEach
     public void init() {
         // ID = 1
-        Category category01 = categoryRepository.save(new Category("상의", 1, null));
+        Category category01 = categoryRepository.save(new Category("상의", 1));
         categoryRepository.save(new Category("반소매 티셔츠", 2, category01.getId()));
         categoryRepository.save(new Category("셔츠/블라우스", 2, category01.getId()));
 
         // ID = 4
-        Category category02 = categoryRepository.save(new Category("바지", 1, null));
+        Category category02 = categoryRepository.save(new Category("바지", 1));
         categoryRepository.save(new Category("데님 팬츠", 2, category02.getId()));
         categoryRepository.save(new Category("코튼 팬츠", 2, category02.getId()));
         categoryRepository.save(new Category("슈트 팬츠/슬랙스", 2, category02.getId()));
@@ -45,7 +45,7 @@ public class SearchCategoryApiTest extends MockMvcTestSupport {
         categoryRepository.save(new Category("기타 바지", 2, category02.getId()));
 
         // ID = 7
-        Category category03 = categoryRepository.save(new Category("아우터", 1, null));
+        Category category03 = categoryRepository.save(new Category("아우터", 1));
         categoryRepository.save(new Category("카디건", 2, category03.getId()));
         categoryRepository.save(new Category("겨울 싱글 코트", 2, category03.getId()));
     }
@@ -132,4 +132,23 @@ public class SearchCategoryApiTest extends MockMvcTestSupport {
         assertTrue(content.isEmpty());
     }
 
+    @Test
+    @DisplayName("카테고리 id를 넘기지 않을 경우 전체 카테고리를 조회힌다.")
+    public void getCategories05() throws Exception {
+        //given
+
+        //when & then
+        MvcResult mvcResult = mockMvc.perform(
+                        get(URI).contentType(MediaType.APPLICATION_JSON)
+                                .queryParam("size", "20")
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String result = mvcResult.getResponse().getContentAsString(Charset.forName("UTF-8"));
+        JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
+        JsonArray content = jsonObject.getAsJsonArray("content");
+        assertEquals(15, content.size());
+    }
 }

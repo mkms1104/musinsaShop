@@ -1,10 +1,13 @@
 package com.musinsa.shop.domain.category;
 
-import lombok.*;
-import org.springframework.util.Assert;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.List;
+import javax.validation.ValidationException;
+import java.util.Objects;
 
 @ToString @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,17 +29,32 @@ public class Category {
 //    @OneToMany(fetch = FetchType.LAZY)
 //    private List<Category> childCategories;
 
-    public boolean isRoot() {
-        return depth == 1;
-    }
-
+    // ============ construct ============ //
     public Category(String name, int depth, Long parentId) {
         this.name = name;
         this.depth = depth;
         this.parentId = parentId;
     }
 
+    public Category(String name, int depth) {
+        this(name, depth, null);
+    }
+
+    public Category(String name) {
+        this.name = name;
+    }
+
+    // ============ 비지니스 로직 ============ //
     public void updateCategoryName(String name) {
         this.name = name;
+    }
+
+    public boolean isRoot() {
+        return depth == 1;
+    }
+    public void validExistParentIdWithRoot() {
+        if (!isRoot() && Objects.isNull(parentId)) {
+            throw new ValidationException("parentId is null");
+        }
     }
 }
