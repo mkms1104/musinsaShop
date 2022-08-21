@@ -1,6 +1,5 @@
 package com.musinsa.shop.webapi.controller;
 
-import com.google.gson.JsonObject;
 import com.musinsa.shop.domain.category.Category;
 import com.musinsa.shop.domain.category.CategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,10 +14,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
-
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

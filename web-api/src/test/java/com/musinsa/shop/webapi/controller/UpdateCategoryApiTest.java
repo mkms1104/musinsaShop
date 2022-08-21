@@ -126,4 +126,26 @@ public class UpdateCategoryApiTest {
                 .andExpect(status().isOk())
         ;
     }
+
+    @Test
+    @DisplayName("존재하지 않는 카테고리 id를 수정 요청한 경우 400 응답을 리턴한다.")
+    public void updateCategory05() throws Exception {
+        //given
+        Long categoryId = 123L;
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("name", "바지");
+
+        //when & then
+        mockMvc.perform(
+                        patch("/api/v1/mshop/categories/{category_id}", categoryId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonObject.toString())
+
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorType", is("NO_DATA_FOUND")))
+                .andExpect(jsonPath("$.msg", is("no data found exception with " + categoryId)));
+        ;
+    }
 }

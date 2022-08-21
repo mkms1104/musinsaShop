@@ -69,8 +69,9 @@ public class SearchCategoryApiTest {
 
         //when & then
         MvcResult mvcResult = mockMvc.perform(
-                        get("/api/v1/mshop/categories/{category_id}", categoryId)
+                        get("/api/v1/mshop/categories")
                                 .contentType(MediaType.APPLICATION_JSON)
+                                .queryParam("category_id", categoryId.toString())
                                 .queryParam("page", "0")
                                 .queryParam("size", "5")
                 )

@@ -13,10 +13,10 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.validation.ValidationException;
-import javax.xml.bind.DataBindingException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @RestControllerAdvice
@@ -28,8 +28,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         cachedError.put(ErrorType.UNKNOWN, new Error(ErrorType.UNKNOWN, "unknown exception"));
     }
 
-    @ExceptionHandler(NoDataFoundException.class)
-    public ResponseEntity<Error> handleNoDataFoundException(NoDataFoundException exception) {
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<Error> handleNoSuchElementException(NoSuchElementException exception) {
         String id = exception.getMessage();
         Error error = new Error(ErrorType.NO_DATA_FOUND, "no data found exception with %s", id);
         return ResponseEntity.status(error.getHttpStatus()).body(error);
