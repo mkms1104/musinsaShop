@@ -45,7 +45,7 @@ public class DeleteCategoryApiTest extends MockMvcTestSupport {
     @DisplayName("카테고리 정상 삭제")
     public void deleteCategory01() throws Exception {
         //given
-        Long categoryId = 2L;
+        long categoryId = 2L;
 
         //when & then
         mockMvc.perform(
@@ -63,7 +63,7 @@ public class DeleteCategoryApiTest extends MockMvcTestSupport {
     @DisplayName("부모 카테고리를 삭제할 경우 자식 카테고리도 삭제되어야 한다.")
     public void deleteCategory02() throws Exception {
         //given
-        Long categoryId = 1L;
+        long categoryId = 1L;
 
         //when
         mockMvc.perform(
@@ -82,7 +82,7 @@ public class DeleteCategoryApiTest extends MockMvcTestSupport {
     @DisplayName("존재하지 않는 카테고리 id를 삭제 요청한 경우 400 응답을 리턴한다.")
     public void deleteCategory03() throws Exception {
         //given
-        Long categoryId = 123L;
+        long categoryId = 123L;
 
         //when & then
         mockMvc.perform(

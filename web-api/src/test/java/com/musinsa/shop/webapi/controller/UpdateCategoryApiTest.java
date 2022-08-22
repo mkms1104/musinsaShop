@@ -42,7 +42,7 @@ public class UpdateCategoryApiTest extends MockMvcTestSupport {
     @DisplayName("카테고리명 정상 업데이트")
     public void updateCategory01() throws Exception {
         //given
-        Long categoryId = 1L; // 1뎁스 카테고리 ID
+        long categoryId = 1L; // 1뎁스 카테고리 ID
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("name", "가방");
 
@@ -60,7 +60,7 @@ public class UpdateCategoryApiTest extends MockMvcTestSupport {
     @DisplayName("수정하려는 카테고리명을 입력하지 않았을 경우 400 응답을 리턴한다.")
     public void updateCategory02() throws Exception {
         //given
-        Long categoryId = 1L; // 1뎁스 카테고리 ID
+        long categoryId = 1L; // 1뎁스 카테고리 ID
         JsonObject jsonObject = new JsonObject();
 
         //when & then
@@ -79,7 +79,6 @@ public class UpdateCategoryApiTest extends MockMvcTestSupport {
     @DisplayName("수정하려는 카테고리명이 동일한 뎁스에 이미 존재할 경우 400 응답을 리턴한다.")
     public void updateCategory03() throws Exception {
         //given
-        Long categoryId = 2L; // 1뎁스 카테고리 ID
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("name", "바지"); // 1뎁스 카테고리에 바지라는 명칭이 이미 존재한다.
 
@@ -117,7 +116,7 @@ public class UpdateCategoryApiTest extends MockMvcTestSupport {
     @DisplayName("존재하지 않는 카테고리 id를 수정 요청한 경우 400 응답을 리턴한다.")
     public void updateCategory05() throws Exception {
         //given
-        Long categoryId = 123L;
+        long categoryId = 123L;
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("name", "바지");
 

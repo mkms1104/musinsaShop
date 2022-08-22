@@ -1,5 +1,6 @@
 package com.musinsa.shop.webapi.controller;
 
+import com.musinsa.shop.domain.category.Category;
 import com.musinsa.shop.webapi.dto.CategoryCreateDto;
 import com.musinsa.shop.webapi.dto.CategoryResponseDto;
 import com.musinsa.shop.webapi.dto.CategoryUpdateDto;
@@ -29,8 +30,8 @@ public class CategoryApiController {
 
     @PostMapping
     public ResponseEntity<Void> createCategory(@Valid @RequestBody CategoryCreateDto dto) {
-        Long id = categoryService.createCategory(dto.toEntity());
-        URI uri = WebMvcLinkBuilder.linkTo(CategoryApiController.class).slash(id).toUri();
+        Category savedCategory = categoryService.createCategory(dto.toEntity());
+        URI uri = WebMvcLinkBuilder.linkTo(CategoryApiController.class).slash(savedCategory.getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
 

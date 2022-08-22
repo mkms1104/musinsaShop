@@ -37,16 +37,16 @@ public class CategoryService {
         return categoryResponseDtoBasedPage(findCategoriesWithPage, pageable);
     }
 
-    private PageImpl categoryResponseDtoBasedPage(Page<Category> categoriesWithPage, Pageable pageable) {
+    private PageImpl<CategoryResponseDto> categoryResponseDtoBasedPage(Page<Category> categoriesWithPage, Pageable pageable) {
         List<CategoryResponseDto> categories = categoriesWithPage.stream()
-                .map(v -> new CategoryResponseDto(v))
+                .map(CategoryResponseDto::new)
                 .collect(Collectors.toList());
 
         return new PageImpl<>(categories, pageable, categoriesWithPage.getTotalPages());
     }
 
     @Transactional
-    public Long createCategory(Category category) {
+    public Category createCategory(Category category) {
         Long parentId = category.getParentId();
         this.existCategory(category.getDepth(), category.getName());
         category.validExistParentIdWithRoot();
@@ -55,9 +55,7 @@ public class CategoryService {
             Optional<Category> parentCategoryOp = categoryRepository.findById(parentId);
             if(parentCategoryOp.isEmpty()) throw new ValidationException("parentId is not exist");
         }
-
-        Category saved = categoryRepository.save(category);
-        return saved.getId();
+        return categoryRepository.save(category);
     }
 
     @Transactional
