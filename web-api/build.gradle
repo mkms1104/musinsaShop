@@ -7,5 +7,10 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.9.0'
     testImplementation 'com.google.code.gson:gson:2.9.0'
 
+    implementation 'org.mapstruct:mapstruct:1.5.2.Final'
+    implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+
     implementation project(':domain')
 }

@@ -1,7 +1,6 @@
-package com.musinsa.shop.domain;
+package com.musinsa.shop.domain.category;
 
-import com.musinsa.shop.domain.category.Category;
-import com.musinsa.shop.domain.category.CategoryRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -14,11 +13,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
-class CategoryTest {
-    @Autowired private CategoryRepository categoryRepository;
+public class CategoryTest {
+    @Autowired
+    private CategoryRepository categoryRepository;
 
+    @DisplayName("categoryRepository save 메서드 동작 확인")
     @Test
-    void create() {
+    void insert() {
         //given & when
         categoryRepository.save(new Category("상의", 1));
         categoryRepository.save(new Category("긴소매 티셔츠", 2, 1L));
@@ -31,6 +32,7 @@ class CategoryTest {
         assertEquals(2, categoryRepository.findAll().get(1).getDepth());
     }
 
+    @DisplayName("categoryRepository 조회 메서드 동작 확인")
     @Test
     void get() {
         //given
@@ -62,6 +64,7 @@ class CategoryTest {
         assertEquals("반소매 티셔츠", page.getContent().get(1).getName());
     }
 
+    @DisplayName("변경 감지로 인한 update 동작 확인")
     @Test
     void update() {
         //given
@@ -76,6 +79,7 @@ class CategoryTest {
         assertEquals("하의", findCategoryOp.get().getName());
     }
 
+    @DisplayName("categoryRepository 삭제 메서드 동작 확인")
     @Test
     void delete() {
         //given

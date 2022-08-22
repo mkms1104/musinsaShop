@@ -1,7 +1,8 @@
 package com.musinsa.shop.webapi.dto;
 
-import com.musinsa.shop.domain.category.Category;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.validation.constraints.Max;
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CategoryCreateDto {
     @NotBlank(message = "name param is null")
     private String name;
@@ -22,7 +24,13 @@ public class CategoryCreateDto {
 
     private Long parentId;
 
-    public Category toEntity() {
-        return new Category(name, depth, parentId);
+    public CategoryCreateDto(String name, int depth, Long parentId) {
+        this.name = name;
+        this.depth = depth;
+        this.parentId = parentId;
+    }
+
+    public CategoryCreateDto(String name, int depth) {
+        this(name, depth, null);
     }
 }

@@ -23,7 +23,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class GetCategoryApiTest extends MockMvcTestSupport {
-    @Autowired private CategoryRepository categoryRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     private final String URI = "/api/v1/mshop/categories";
 
@@ -51,18 +52,18 @@ public class GetCategoryApiTest extends MockMvcTestSupport {
         categoryRepository.save(new Category("겨울 싱글 코트", 2, category03.getId()));
     }
 
-    @Test
     @DisplayName("페이징 파라미터에 따라 올바르게 조회힌다.")
+    @Test
     void getCategories01() throws Exception {
         //given
         long categoryId = 4L; // parentId
 
         //when & then
         MvcResult mvcResult = mockMvc.perform(
-                    get(URI).contentType(MediaType.APPLICATION_JSON)
-                    .queryParam("category_id", Long.toString(categoryId))
-                    .queryParam("page", "0")
-                    .queryParam("size", "5")
+                        get(URI).contentType(MediaType.APPLICATION_JSON)
+                                .queryParam("category_id", Long.toString(categoryId))
+                                .queryParam("page", "0")
+                                .queryParam("size", "5")
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -74,16 +75,16 @@ public class GetCategoryApiTest extends MockMvcTestSupport {
         assertEquals(5, content.size());
     }
 
-    @Test
     @DisplayName("페이징 파라미터를 넘기지 않을 경우 기본으로 1페이지 10개를 조회힌다.")
+    @Test
     void getCategories02() throws Exception {
         //given
         long categoryId = 4L; // parentId
 
         //when & then
         MvcResult mvcResult = mockMvc.perform(
-                    get(URI).contentType(MediaType.APPLICATION_JSON)
-                    .queryParam("category_id", Long.toString(categoryId))
+                        get(URI).contentType(MediaType.APPLICATION_JSON)
+                                .queryParam("category_id", Long.toString(categoryId))
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -95,16 +96,16 @@ public class GetCategoryApiTest extends MockMvcTestSupport {
         assertEquals(8, content.size());
     }
 
-    @Test
     @DisplayName("존재하지 않는 카테고리 id를 넘길 경우 400 응답을 리턴한다.")
+    @Test
     void getCategories03() throws Exception {
         //given
         long categoryId = 123L; // parentId
 
         //when & then
         mockMvc.perform(
-                    get(URI).contentType(MediaType.APPLICATION_JSON)
-                    .queryParam("category_id", Long.toString(categoryId))
+                        get(URI).contentType(MediaType.APPLICATION_JSON)
+                                .queryParam("category_id", Long.toString(categoryId))
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -112,16 +113,16 @@ public class GetCategoryApiTest extends MockMvcTestSupport {
                 .andExpect(jsonPath("$.msg", is("no data found exception with " + categoryId)));
     }
 
-    @Test
     @DisplayName("하위 카테고리가 없는 경우 빈 배열을 리턴한다.")
+    @Test
     void getCategories04() throws Exception {
         //given
         long categoryId = 2L; // parentId
 
         //when & then
         MvcResult mvcResult = mockMvc.perform(
-                    get(URI).contentType(MediaType.APPLICATION_JSON)
-                    .queryParam("category_id", Long.toString(categoryId))
+                        get(URI).contentType(MediaType.APPLICATION_JSON)
+                                .queryParam("category_id", Long.toString(categoryId))
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -133,8 +134,8 @@ public class GetCategoryApiTest extends MockMvcTestSupport {
         assertTrue(content.isEmpty());
     }
 
-    @Test
     @DisplayName("카테고리 id를 넘기지 않을 경우 전체 카테고리를 조회힌다.")
+    @Test
     void getCategories05() throws Exception {
         //given
 
