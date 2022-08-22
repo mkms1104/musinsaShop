@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,19 +22,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class SearchCategoryApiTest extends MockMvcTestSupport {
+public class GetCategoryApiTest extends MockMvcTestSupport {
     @Autowired private CategoryRepository categoryRepository;
 
     private final String URI = "/api/v1/mshop/categories";
     @BeforeEach
     public void init() {
         // ID = 1
-        Category category01 = categoryRepository.save(new Category("상의", 1, null));
+        Category category01 = categoryRepository.save(new Category("상의", 1));
         categoryRepository.save(new Category("반소매 티셔츠", 2, category01.getId()));
         categoryRepository.save(new Category("셔츠/블라우스", 2, category01.getId()));
 
         // ID = 4
-        Category category02 = categoryRepository.save(new Category("바지", 1, null));
+        Category category02 = categoryRepository.save(new Category("바지", 1));
         categoryRepository.save(new Category("데님 팬츠", 2, category02.getId()));
         categoryRepository.save(new Category("코튼 팬츠", 2, category02.getId()));
         categoryRepository.save(new Category("슈트 팬츠/슬랙스", 2, category02.getId()));
@@ -45,7 +45,7 @@ public class SearchCategoryApiTest extends MockMvcTestSupport {
         categoryRepository.save(new Category("기타 바지", 2, category02.getId()));
 
         // ID = 7
-        Category category03 = categoryRepository.save(new Category("아우터", 1, null));
+        Category category03 = categoryRepository.save(new Category("아우터", 1));
         categoryRepository.save(new Category("카디건", 2, category03.getId()));
         categoryRepository.save(new Category("겨울 싱글 코트", 2, category03.getId()));
     }
@@ -54,12 +54,12 @@ public class SearchCategoryApiTest extends MockMvcTestSupport {
     @DisplayName("페이징 파라미터에 따라 올바르게 조회힌다.")
     public void getCategories01() throws Exception {
         //given
-        Long categoryId = 4L; // parentId
+        long categoryId = 4L; // parentId
 
         //when & then
         MvcResult mvcResult = mockMvc.perform(
                     get(URI).contentType(MediaType.APPLICATION_JSON)
-                    .queryParam("category_id", categoryId.toString())
+                    .queryParam("category_id", Long.toString(categoryId))
                     .queryParam("page", "0")
                     .queryParam("size", "5")
                 )
@@ -67,7 +67,7 @@ public class SearchCategoryApiTest extends MockMvcTestSupport {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String result = mvcResult.getResponse().getContentAsString(Charset.forName("UTF-8"));
+        String result = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
         JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
         JsonArray content = jsonObject.getAsJsonArray("content");
         assertEquals(5, content.size());
@@ -77,18 +77,18 @@ public class SearchCategoryApiTest extends MockMvcTestSupport {
     @DisplayName("페이징 파라미터를 넘기지 않을 경우 기본으로 1페이지 10개를 조회힌다.")
     public void getCategories02() throws Exception {
         //given
-        Long categoryId = 4L; // parentId
+        long categoryId = 4L; // parentId
 
         //when & then
         MvcResult mvcResult = mockMvc.perform(
                     get(URI).contentType(MediaType.APPLICATION_JSON)
-                    .queryParam("category_id", categoryId.toString())
+                    .queryParam("category_id", Long.toString(categoryId))
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String result = mvcResult.getResponse().getContentAsString(Charset.forName("UTF-8"));
+        String result = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
         JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
         JsonArray content = jsonObject.getAsJsonArray("content");
         assertEquals(8, content.size());
@@ -98,12 +98,12 @@ public class SearchCategoryApiTest extends MockMvcTestSupport {
     @DisplayName("존재하지 않는 카테고리 id를 넘길 경우 400 응답을 리턴한다.")
     public void getCategories03() throws Exception {
         //given
-        Long categoryId = 123L; // parentId
+        long categoryId = 123L; // parentId
 
         //when & then
         mockMvc.perform(
                     get(URI).contentType(MediaType.APPLICATION_JSON)
-                    .queryParam("category_id", categoryId.toString())
+                    .queryParam("category_id", Long.toString(categoryId))
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -115,21 +115,40 @@ public class SearchCategoryApiTest extends MockMvcTestSupport {
     @DisplayName("하위 카테고리가 없는 경우 빈 배열을 리턴한다.")
     public void getCategories04() throws Exception {
         //given
-        Long categoryId = 2L; // parentId
+        long categoryId = 2L; // parentId
 
         //when & then
         MvcResult mvcResult = mockMvc.perform(
                     get(URI).contentType(MediaType.APPLICATION_JSON)
-                    .queryParam("category_id", categoryId.toString())
+                    .queryParam("category_id", Long.toString(categoryId))
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String result = mvcResult.getResponse().getContentAsString(Charset.forName("UTF-8"));
+        String result = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
         JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
         JsonArray content = jsonObject.getAsJsonArray("content");
         assertTrue(content.isEmpty());
     }
 
+    @Test
+    @DisplayName("카테고리 id를 넘기지 않을 경우 전체 카테고리를 조회힌다.")
+    public void getCategories05() throws Exception {
+        //given
+
+        //when & then
+        MvcResult mvcResult = mockMvc.perform(
+                        get(URI).contentType(MediaType.APPLICATION_JSON)
+                                .queryParam("size", "20")
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String result = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
+        JsonArray content = jsonObject.getAsJsonArray("content");
+        assertEquals(15, content.size());
+    }
 }

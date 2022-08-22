@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class CreateMockMvcTest extends MockMvcTestSupport {
+public class CreateCategoryApiTest extends MockMvcTestSupport {
     @Autowired private CategoryRepository categoryRepository;
     private final String URI = "/api/v1/mshop/categories";
 
