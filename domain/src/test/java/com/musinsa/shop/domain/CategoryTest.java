@@ -2,55 +2,92 @@ package com.musinsa.shop.domain;
 
 import com.musinsa.shop.domain.category.Category;
 import com.musinsa.shop.domain.category.CategoryRepository;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 class CategoryTest {
     @Autowired private CategoryRepository categoryRepository;
 
     @Test
-    @DisplayName("기본적인 CRUD 동작을 확인한다.")
-    public void basicCrud() {
-        assertAll(
-            () -> {
-                Optional<Category> findCategoryOp = categoryRepository.findById(123123L);
-                assertTrue(findCategoryOp.isEmpty());
-            },
-            () -> {
-                categoryRepository.save(new Category("상의", 1, null));
-                categoryRepository.save(new Category("하의", 1, null));
-                assertEquals(2, categoryRepository.findAll().size());
-                assertEquals("상의", categoryRepository.findAll().get(0).getName());
-                assertEquals(1, categoryRepository.findAll().get(0).getDepth());
-                assertEquals("하의", categoryRepository.findAll().get(1).getName());
-                assertEquals(1, categoryRepository.findAll().get(1).getDepth());
-            },
-            () -> {
-                Optional<Category> findCategoryOp = categoryRepository.findByName("상의");
-                assertTrue(findCategoryOp.isPresent());
-                assertEquals("상의", findCategoryOp.get().getName());
-            },
-            () -> {
-                categoryRepository.deleteById(1L);
-                assertEquals(1, categoryRepository.findAll().size());
-                assertEquals("하의", categoryRepository.findAll().get(0).getName());
-            }
-        );
+    void create() {
+        //given & when
+        categoryRepository.save(new Category("상의", 1));
+        categoryRepository.save(new Category("긴소매 티셔츠", 2, 1L));
+
+        //then
+        assertEquals(2, categoryRepository.findAll().size());
+        assertEquals("상의", categoryRepository.findAll().get(0).getName());
+        assertEquals(1, categoryRepository.findAll().get(0).getDepth());
+        assertEquals("긴소매 티셔츠", categoryRepository.findAll().get(1).getName());
+        assertEquals(2, categoryRepository.findAll().get(1).getDepth());
     }
 
     @Test
-    @DisplayName("queryCreationFromMethodNames 동작을 확인한다.")
-    public void queryCreationFromMethodNames() {
-        Category category01 = categoryRepository.save(new Category("상의", 1, null));
-        categoryRepository.save(new Category("반소매 티셔츠", 2, category01.getId()));
-        categoryRepository.save(new Category("셔츠/블라우스", 2, category01.getId()));
-        categoryRepository.deleteByParentId(category01.getId());
+    void get() {
+        //given
+        categoryRepository.save(new Category("상의", 1)); // id = 1
+        categoryRepository.save(new Category("긴소매 티셔츠", 2, 1L)); // id = 2
+        categoryRepository.save(new Category("반소매 티셔츠", 2, 1L)); // id = 3
+
+        //when & then
+        Optional<Category> findCategoryOp01 = categoryRepository.findById(123123L);
+        assertTrue(findCategoryOp01.isEmpty());
+
+        Optional<Category> findCategoryOp02 = categoryRepository.findById(1L);
+        assertTrue(findCategoryOp02.isPresent());
+        assertEquals("상의", findCategoryOp02.get().getName());
+        assertEquals(1, findCategoryOp02.get().getDepth());
+
+        Optional<Category> findCategoryOp03 = categoryRepository.findByName("상의");
+        assertTrue(findCategoryOp03.isPresent());
+
+        Optional<Category> findCategoryOp04 = categoryRepository.findByNameAndDepth("상의", 1);
+        assertTrue(findCategoryOp04.isPresent());
+
+        Optional<Category> findCategoryOp05 = categoryRepository.findByNameAndDepth("상의", 2);
+        assertTrue(findCategoryOp05.isEmpty());
+
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<Category> page = categoryRepository.findByParentId(1L, pageRequest);
+        assertEquals("긴소매 티셔츠", page.getContent().get(0).getName());
+        assertEquals("반소매 티셔츠", page.getContent().get(1).getName());
+    }
+
+    @Test
+    void update() {
+        //given
+        Category category = new Category("상의", 1);
+        categoryRepository.save(category);
+
+        // when
+        category.updateCategoryName("하의");
+
+        //then
+        Optional<Category> findCategoryOp = categoryRepository.findById(1L);
+        assertEquals("하의", findCategoryOp.get().getName());
+    }
+
+    @Test
+    void delete() {
+        //given
+        Category category = categoryRepository.save(new Category("상의", 1));
+        categoryRepository.save(new Category("반소매 티셔츠", 2, category.getId()));
+        categoryRepository.save(new Category("셔츠/블라우스", 2, category.getId()));
+
+        //when
+        categoryRepository.deleteById(category.getId());
+        categoryRepository.deleteByParentId(category.getId());
+
+        //then
+        assertTrue(categoryRepository.findAll().isEmpty());
     }
 }

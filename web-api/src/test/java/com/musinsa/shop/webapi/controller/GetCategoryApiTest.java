@@ -26,8 +26,9 @@ public class GetCategoryApiTest extends MockMvcTestSupport {
     @Autowired private CategoryRepository categoryRepository;
 
     private final String URI = "/api/v1/mshop/categories";
+
     @BeforeEach
-    public void init() {
+    void init() {
         // ID = 1
         Category category01 = categoryRepository.save(new Category("상의", 1));
         categoryRepository.save(new Category("반소매 티셔츠", 2, category01.getId()));
@@ -52,7 +53,7 @@ public class GetCategoryApiTest extends MockMvcTestSupport {
 
     @Test
     @DisplayName("페이징 파라미터에 따라 올바르게 조회힌다.")
-    public void getCategories01() throws Exception {
+    void getCategories01() throws Exception {
         //given
         long categoryId = 4L; // parentId
 
@@ -75,7 +76,7 @@ public class GetCategoryApiTest extends MockMvcTestSupport {
 
     @Test
     @DisplayName("페이징 파라미터를 넘기지 않을 경우 기본으로 1페이지 10개를 조회힌다.")
-    public void getCategories02() throws Exception {
+    void getCategories02() throws Exception {
         //given
         long categoryId = 4L; // parentId
 
@@ -96,7 +97,7 @@ public class GetCategoryApiTest extends MockMvcTestSupport {
 
     @Test
     @DisplayName("존재하지 않는 카테고리 id를 넘길 경우 400 응답을 리턴한다.")
-    public void getCategories03() throws Exception {
+    void getCategories03() throws Exception {
         //given
         long categoryId = 123L; // parentId
 
@@ -113,7 +114,7 @@ public class GetCategoryApiTest extends MockMvcTestSupport {
 
     @Test
     @DisplayName("하위 카테고리가 없는 경우 빈 배열을 리턴한다.")
-    public void getCategories04() throws Exception {
+    void getCategories04() throws Exception {
         //given
         long categoryId = 2L; // parentId
 
@@ -134,7 +135,7 @@ public class GetCategoryApiTest extends MockMvcTestSupport {
 
     @Test
     @DisplayName("카테고리 id를 넘기지 않을 경우 전체 카테고리를 조회힌다.")
-    public void getCategories05() throws Exception {
+    void getCategories05() throws Exception {
         //given
 
         //when & then

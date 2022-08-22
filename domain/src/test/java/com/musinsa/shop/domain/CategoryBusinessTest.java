@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class CategoryBusinessTest {
     @Test
-    public void isRoot() {
+    void isRoot() {
         Category category01 = new Category("상의", 1);
         assertTrue(category01.isRoot());
 
@@ -21,7 +21,7 @@ public class CategoryBusinessTest {
     }
 
     @Test
-    public void validExistParentIdWithRoot() {
+    void validExistParentIdWithRoot() {
         // 루트 카테고리는 parentId 지정 불필요
         Category category01 = new Category("상의", 1);
         assertDoesNotThrow(category01::validExistParentIdWithRoot);
