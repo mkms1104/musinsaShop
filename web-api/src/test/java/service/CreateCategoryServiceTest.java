@@ -27,7 +27,7 @@ public class CreateCategoryServiceTest {
 
     @Test
     @DisplayName("자식 카테고리 등록 시 부모 카테고리 id 값 지정 여부에 따른 동작 확인")
-    public void existParentIdWithChild() {
+    void existParentIdWithChild() {
         //given
         doReturn(Optional.empty()).when(categoryRepository).findById(111L);
         doReturn(Optional.of(mock(Category.class))).when(categoryRepository).findById(123123L);
@@ -46,11 +46,11 @@ public class CreateCategoryServiceTest {
 
     @Test
     @DisplayName("카테고리명 중복 여부에 따른 동작 확인")
-    public void duplicatedCategoryName() {
+    void duplicatedCategoryName() {
         //given
         //2뎁스의 카디건 카테고리는 이미 존재한다.
-        doReturn(Optional.of(mock(Category.class))).when(categoryRepository).findByDepthAndName(2, "카디건");
-        doReturn(Optional.empty()).when(categoryRepository).findByDepthAndName(1, "상의");
+        doReturn(Optional.of(mock(Category.class))).when(categoryRepository).findByNameAndDepth( "카디건", 2);
+        doReturn(Optional.empty()).when(categoryRepository).findByNameAndDepth( "상의", 1);
 
         //when & then
         ValidationException thrown = assertThrows(ValidationException.class, () -> categoryService.createCategory(new Category("카디건", 2, 1L)));

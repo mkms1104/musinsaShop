@@ -11,8 +11,11 @@ import java.util.Optional;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     Optional<Category> findByName(String name);
-    Optional<Category> findByDepthAndName(int depth, String name);
+
+    Optional<Category> findByNameAndDepth(String name, int depth);
+
     Page<Category> findByParentId(Long parentId, Pageable pageable);
+
     @Transactional
     @Modifying(clearAutomatically = true)
     @Query("delete from Category c where c.parentId = ?1")

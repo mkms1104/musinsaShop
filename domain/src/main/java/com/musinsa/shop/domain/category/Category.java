@@ -52,6 +52,7 @@ public class Category {
     public boolean isRoot() {
         return depth == 1;
     }
+
     public void validExistParentIdWithRoot() {
         if (!isRoot() && Objects.isNull(parentId)) {
             throw new ValidationException("parentId is null");

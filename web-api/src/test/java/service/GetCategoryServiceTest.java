@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -34,7 +34,7 @@ public class GetCategoryServiceTest {
 
     @Test
     @DisplayName("부모 카테고리 id 값을 지정하지 않는 경우 모든 카테고리를 조회한다.")
-    public void getAllCategory() {
+    void getAllCategory() {
         //given
         List<Category> categories = List.of(
                 new Category("상의", 1),
@@ -65,7 +65,7 @@ public class GetCategoryServiceTest {
 
     @Test
     @DisplayName("지정한 부모 카테고리의 모든 하위 카테고리를 조회한다.")
-    public void getCategory() {
+    void getCategory() {
         //given
         List<Category> categories = List.of(
                 new Category("상의", 1),
@@ -103,7 +103,7 @@ public class GetCategoryServiceTest {
 
     @Test
     @DisplayName("PageImpl 동작 테스트")
-    public void pageImpl() {
+    void pageImpl() {
         List<Category> categories = List.of(
                 new Category("상의", 1),
                 new Category("반소매 티셔츠", 2, 1L),

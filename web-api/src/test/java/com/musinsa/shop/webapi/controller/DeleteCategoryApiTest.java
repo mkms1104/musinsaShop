@@ -24,7 +24,7 @@ public class DeleteCategoryApiTest extends MockMvcTestSupport {
     private final String URI = "/api/v1/mshop/categories/{category_id}";
 
     @BeforeEach
-    public void init() {
+    void init() {
         // ID = 1
         Category category01 = categoryRepository.save(new Category("상의", 1));
         categoryRepository.save(new Category("반소매 티셔츠", 2, category01.getId()));
@@ -43,7 +43,7 @@ public class DeleteCategoryApiTest extends MockMvcTestSupport {
 
     @Test
     @DisplayName("카테고리 정상 삭제")
-    public void deleteCategory01() throws Exception {
+    void deleteCategory01() throws Exception {
         //given
         long categoryId = 2L;
 
@@ -61,7 +61,7 @@ public class DeleteCategoryApiTest extends MockMvcTestSupport {
 
     @Test
     @DisplayName("부모 카테고리를 삭제할 경우 자식 카테고리도 삭제되어야 한다.")
-    public void deleteCategory02() throws Exception {
+    void deleteCategory02() throws Exception {
         //given
         long categoryId = 1L;
 
@@ -80,7 +80,7 @@ public class DeleteCategoryApiTest extends MockMvcTestSupport {
 
     @Test
     @DisplayName("존재하지 않는 카테고리 id를 삭제 요청한 경우 400 응답을 리턴한다.")
-    public void deleteCategory03() throws Exception {
+    void deleteCategory03() throws Exception {
         //given
         long categoryId = 123L;
 

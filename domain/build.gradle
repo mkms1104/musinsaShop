@@ -6,6 +6,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     runtimeOnly 'com.h2database:h2'
 
+    /** 기능 확장되면 사용할 예정 */
 //    api 'org.mapstruct:mapstruct:1.5.2.Final'
 //    api 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 //    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'

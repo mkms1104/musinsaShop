@@ -76,7 +76,7 @@ public class CategoryService {
     }
 
     private void existCategory(int depth, String categoryName) {
-        Optional<Category> findUniqueCategoryOp = categoryRepository.findByDepthAndName(depth, categoryName);
+        Optional<Category> findUniqueCategoryOp = categoryRepository.findByNameAndDepth(categoryName, depth);
         if(findUniqueCategoryOp.isPresent()) throw new ValidationException("category name is duplicated");
     }
 }

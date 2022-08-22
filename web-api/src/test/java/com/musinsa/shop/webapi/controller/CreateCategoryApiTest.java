@@ -16,11 +16,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class CreateCategoryApiTest extends MockMvcTestSupport {
     @Autowired private CategoryRepository categoryRepository;
+
     private final String URI = "/api/v1/mshop/categories";
 
     @Test
     @DisplayName("카테고리 정상 등록")
-    public void createCategory01() throws Exception {
+    void createCategory01() throws Exception {
         //given
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("name", "상의");
@@ -38,7 +39,7 @@ public class CreateCategoryApiTest extends MockMvcTestSupport {
 
     @Test
     @DisplayName("필수 파라미터가 없을 경우 400 응답을 리턴한다.")
-    public void createCategory02() {
+    void createCategory02() {
         assertAll(
                 // name 파라미터가 없다.
                 () -> {
@@ -78,7 +79,7 @@ public class CreateCategoryApiTest extends MockMvcTestSupport {
 
    @Test
    @DisplayName("등록하려는 카테고리명이 동일한 뎁스에 이미 존재할 경우 400 응답을 리턴한다.")
-   public void createCategory03() throws Exception {
+   void createCategory03() throws Exception {
        //given
        categoryRepository.save(new Category("상의", 1, null));
 
@@ -100,7 +101,7 @@ public class CreateCategoryApiTest extends MockMvcTestSupport {
 
    @Test
    @DisplayName("1뎁스가 아닌 카테고리를 부모 카테고리 선택 없이 등록한 경우 400 응답을 리턴한다.")
-   public void createCategory04() throws Exception {
+   void createCategory04() throws Exception {
        //given
        JsonObject jsonObject = new JsonObject();
        jsonObject.addProperty("depth", 2);
@@ -120,7 +121,7 @@ public class CreateCategoryApiTest extends MockMvcTestSupport {
 
     @Test
     @DisplayName("존재하지 않는 부모 카테고리 id 값을 입력했을 경우 400 응답을 리턴한다.")
-    public void createCategory05() throws Exception {
+    void createCategory05() throws Exception {
         //given
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("depth", 2);
@@ -141,7 +142,7 @@ public class CreateCategoryApiTest extends MockMvcTestSupport {
 
     @Test
     @DisplayName("뎁스 값이 1~3 사이가 아닐 경우 400 응답을 리턴한다.")
-    public void createCategory06() throws Exception {
+    void createCategory06() throws Exception {
         //given
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("depth", 5);
