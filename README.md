@@ -20,4 +20,6 @@ Rest API 기반 온라인 쇼핑몰 상품 카테고리 기능 구현
 * Gradle
 
 ## 프로젝트 실행
-
+```c
+java -jar musinsa-shop-web-api-0.0.1.jar
+```
