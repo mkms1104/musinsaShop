@@ -21,8 +21,13 @@ Rest API 기반 온라인 쇼핑몰 상품 카테고리 기능 구현
 
 ## 프로젝트 실행
 * jdk 11 버전은 필수로 설치해야 합니다.
-* jar 다운로드 경로 : https://github.com/mkms1104/musinsaShop/releases/tag/v0.0.1
 
+* 빌드
 ```c
-java -jar musinsa-shop-web-api-0.0.1.jar
+./gradlew clean web-api:build -x test
+```
+
+* 실행
+```c
+java -jar /web-api/build/libs/web-api-0.0.1-SNAPSHOT.jar
 ```
