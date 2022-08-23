@@ -24,6 +24,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     public Page<CategoryResponseDto> getCategory(Long id, Pageable pageable) {
+        if (pageable.getPageSize() > 100) throw new ValidationException("max page size is 100"); // 대량 조회 방지
         return Objects.isNull(id) ? getAllCategories(pageable) : getChildCategories(id, pageable);
     }
 

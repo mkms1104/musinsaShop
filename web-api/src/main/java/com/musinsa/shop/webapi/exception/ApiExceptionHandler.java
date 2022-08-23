@@ -22,7 +22,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity handleNoSuchElementException(NoSuchElementException exception) {
-        log.error("call noSuchElementException\n{}", exception.getMessage());
+        log.error("call noSuchElementException\ninput id is {}", exception.getMessage());
         String id = exception.getMessage();
         return ResponseEntityHelper.ofError(Error.of(ErrorType.NO_DATA_FOUND, "no data found exception with %s", id));
     }
