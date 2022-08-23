@@ -21,34 +21,30 @@ import java.util.NoSuchElementException;
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<Error> handleNoSuchElementException(NoSuchElementException exception) {
+    public ResponseEntity handleNoSuchElementException(NoSuchElementException exception) {
         log.error("call noSuchElementException\n{}", exception.getMessage());
         String id = exception.getMessage();
-        Error error = new Error(ErrorType.NO_DATA_FOUND, "no data found exception with %s", id);
-        return ResponseEntity.status(error.getHttpStatus()).body(error);
+        return ResponseEntityHelper.ofError(Error.of(ErrorType.NO_DATA_FOUND, "no data found exception with %s", id));
     }
 
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<Error> handleValidationException(ValidationException exception) {
+    public ResponseEntity handleValidationException(ValidationException exception) {
         log.error("call validationException\n{}", exception.getMessage());
-        Error error = new Error(ErrorType.NOT_VALID, exception.getMessage());
-        return ResponseEntity.status(error.getHttpStatus()).body(error);
+        return ResponseEntityHelper.ofError(Error.of(ErrorType.NOT_VALID, exception.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Error> handleUnknownException(Exception exception) {
+    public ResponseEntity handleUnknownException(Exception exception) {
         log.error("call unknownException\n{}", exception.getMessage());
-        Error error = new Error(ErrorType.UNKNOWN, "unknown exception");
-        return ResponseEntity.status(error.getHttpStatus()).body(error);
+        return ResponseEntityHelper.ofError(Error.of(ErrorType.UNKNOWN, "unknown exception"));
     }
 
     // @Valid 예외 바인딩 오버라이드
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+    protected ResponseEntity handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         String firstMsg = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
         log.error("call methodArgumentNotValidException\n{}", firstMsg);
-        Error error = new Error(ErrorType.INVALID_PARAMETER, firstMsg);
-        return ResponseEntity.status(error.getHttpStatus()).body(error);
+        return ResponseEntityHelper.ofError(Error.of(ErrorType.INVALID_PARAMETER, firstMsg));
     }
 
     @Getter
@@ -58,13 +54,23 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         @JsonFormat(pattern = "YYYY-MM-dd HH:mm:ss")
         private LocalDateTime errorTime = LocalDateTime.now();
 
-        public Error(ErrorType errorType, String msg, Object... args) {
+        public static Error of(ErrorType errorType, String msg, Object... args) {
+            return new Error(errorType, msg, args);
+        }
+
+        private Error(ErrorType errorType, String msg, Object... args) {
             this.errorType = errorType;
             this.msg = String.format(msg, args);
         }
 
         public HttpStatus getHttpStatus() {
             return this.errorType.getHttpStatus();
+        }
+    }
+
+    private static class ResponseEntityHelper {
+        public static ResponseEntity ofError(Error error) {
+            return ResponseEntity.status(error.getHttpStatus()).body(error);
         }
     }
 

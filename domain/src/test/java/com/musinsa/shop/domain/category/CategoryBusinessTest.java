@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class CategoryBusinessTest {
 
-    @DisplayName("")
+    @DisplayName("isRoot 메서드 동작 확인")
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3})
     void isRoot(int depth) {
@@ -20,9 +20,9 @@ public class CategoryBusinessTest {
         else assertFalse(category.isRoot());
     }
 
-    @DisplayName("루트 카테고리")
+    @DisplayName("existParentIdWithChild 벨리데이션 동작 확인")
     @Test
-    void validExistParentIdWithRoot() {
+    void validExistParentIdWithChild() {
         // 루트 카테고리는 parentId 지정 불필요
         Category category01 = new Category("상의", 1);
         assertDoesNotThrow(category01::validExistParentIdWithChild);
