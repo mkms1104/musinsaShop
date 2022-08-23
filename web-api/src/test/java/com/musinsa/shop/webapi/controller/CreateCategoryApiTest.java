@@ -2,11 +2,8 @@ package com.musinsa.shop.webapi.controller;
 
 import com.google.gson.JsonObject;
 import com.musinsa.shop.domain.category.Category;
-import com.musinsa.shop.domain.category.CategoryRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import static org.hamcrest.Matchers.is;
@@ -15,16 +12,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class CreateCategoryApiTest extends MockMvcTestSupport {
-    @Autowired
-    private CategoryRepository categoryRepository;
-
+public class CreateCategoryApiTest extends CategoryApiTestAround {
     private final String URI = "/api/v1/mshop/categories";
-
-    @BeforeEach
-    void clean() {
-        categoryRepository.deleteAll();
-    }
 
     @DisplayName("카테고리 정상 등록")
     @Test
@@ -54,7 +43,10 @@ public class CreateCategoryApiTest extends MockMvcTestSupport {
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.addProperty("depth", 1);
 
-                    //when & then
+                    //when
+                    assert !jsonObject.has("name");
+
+                    //then
                     mockMvc.perform(
                                     post(URI).contentType(MediaType.APPLICATION_JSON)
                                             .content(jsonObject.toString())
@@ -71,7 +63,10 @@ public class CreateCategoryApiTest extends MockMvcTestSupport {
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.addProperty("name", "상의");
 
-                    //when & then
+                    //when
+                    assert !jsonObject.has("depth");
+
+                    //then
                     mockMvc.perform(
                                     post(URI).contentType(MediaType.APPLICATION_JSON)
                                             .content(jsonObject.toString())
@@ -88,13 +83,15 @@ public class CreateCategoryApiTest extends MockMvcTestSupport {
     @Test
     void createCategory03() throws Exception {
         //given
-        categoryRepository.save(new Category("상의", 1, null));
-
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("depth", 1);
         jsonObject.addProperty("name", "상의");
+        jsonObject.addProperty("depth", 1);
 
-        //when & then
+        //when
+        categoryRepository.save(new Category("상의", 1));
+        assert categoryRepository.findByNameAndDepth("상의", 1).isPresent();
+
+        //then
         mockMvc.perform(
                         post(URI).contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonObject.toString())
@@ -102,8 +99,7 @@ public class CreateCategoryApiTest extends MockMvcTestSupport {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorType", is("NOT_VALID")))
-                .andExpect(jsonPath("$.msg", is("category name is duplicated")))
-        ;
+                .andExpect(jsonPath("$.msg", is("category name is duplicated")));
     }
 
     @DisplayName("1뎁스가 아닌 카테고리를 부모 카테고리 선택 없이 등록한 경우 400 응답을 리턴한다.")
@@ -114,7 +110,11 @@ public class CreateCategoryApiTest extends MockMvcTestSupport {
         jsonObject.addProperty("depth", 2);
         jsonObject.addProperty("name", "상의");
 
-        //when & then
+        //when
+        assert jsonObject.get("depth").getAsInt() != 1;
+        assert !jsonObject.has("parentId");
+
+        //then
         mockMvc.perform(
                         post(URI).contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonObject.toString())
@@ -122,20 +122,23 @@ public class CreateCategoryApiTest extends MockMvcTestSupport {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorType", is("NOT_VALID")))
-                .andExpect(jsonPath("$.msg", is("parentId is null")))
-        ;
+                .andExpect(jsonPath("$.msg", is("parentId is null")));
     }
 
     @DisplayName("존재하지 않는 부모 카테고리 id 값을 입력했을 경우 400 응답을 리턴한다.")
     @Test
     void createCategory05() throws Exception {
         //given
+        long parentId = 1L;
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("depth", 2);
         jsonObject.addProperty("name", "상의");
-        jsonObject.addProperty("parentId", 1);
+        jsonObject.addProperty("parentId", parentId);
 
-        //when & then
+        //when
+        assert categoryRepository.findById(parentId).isEmpty();
+
+        //then
         mockMvc.perform(
                         post(URI).contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonObject.toString())
@@ -143,8 +146,7 @@ public class CreateCategoryApiTest extends MockMvcTestSupport {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorType", is("NOT_VALID")))
-                .andExpect(jsonPath("$.msg", is("parentId is not exist")))
-        ;
+                .andExpect(jsonPath("$.msg", is("parentId is not exist")));
     }
 
     @DisplayName("뎁스 값이 1~3 사이가 아닐 경우 400 응답을 리턴한다.")
@@ -156,7 +158,11 @@ public class CreateCategoryApiTest extends MockMvcTestSupport {
         jsonObject.addProperty("name", "상의");
         jsonObject.addProperty("parentId", 1);
 
-        //when & then
+        //when
+        int paramWithDepth = jsonObject.get("depth").getAsInt();
+        assert !(paramWithDepth >= 1 && 3 >= paramWithDepth);
+
+        //then
         mockMvc.perform(
                         post(URI).contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonObject.toString())
@@ -164,7 +170,6 @@ public class CreateCategoryApiTest extends MockMvcTestSupport {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorType", is("INVALID_PARAMETER")))
-                .andExpect(jsonPath("$.msg", is("depth must be a value between 1 and 3")))
-        ;
+                .andExpect(jsonPath("$.msg", is("depth must be a value between 1 and 3")));
     }
 }

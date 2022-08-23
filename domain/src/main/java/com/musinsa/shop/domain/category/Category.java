@@ -4,9 +4,11 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.ValidationException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
-@ToString
+@ToString(exclude = {"child"})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
@@ -24,9 +26,24 @@ public class Category {
     private Integer depth;
     private Long parentId;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @JoinColumn(name = "parentId")
+    private List<Category> child = new ArrayList<>();
+
+    public void addChild(List<Category> child) {
+        this.child = child;
+    }
+
     // ============ construct ============ //
 
     @Builder
+    public Category(String name, int depth, Long parentId, List<Category> child) {
+        this.name = name;
+        this.depth = depth;
+        this.parentId = parentId;
+        this.child = child;
+    }
+
     public Category(String name, int depth, Long parentId) {
         this.name = name;
         this.depth = depth;
@@ -35,10 +52,6 @@ public class Category {
 
     public Category(String name, int depth) {
         this(name, depth, null);
-    }
-
-    public Category(String name) {
-        this.name = name;
     }
 
     // ============ 비지니스 로직 ============ //
