@@ -8,11 +8,13 @@ import com.musinsa.shop.webapi.dto.CategoryResponseDto;
 import com.musinsa.shop.webapi.dto.CategoryUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.ValidationException;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -33,7 +35,10 @@ public class CategoryService {
         Optional<Category> findCategoryOp = categoryRepository.findById(parentId);
         if (findCategoryOp.isEmpty()) throw new NoSuchElementException(parentId.toString());
 
-        return categoryRepository.findByParentId(parentId, pageable).map(CategoryMapper.INSTANCE::toResponseDto);
+        List<Category> child = findCategoryOp.get().getChild();
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), child.size());
+        return new PageImpl<>(child.subList(start, end), pageable, child.size()).map(CategoryMapper.INSTANCE::toResponseDto);
     }
 
     // 전체 카테고리 조회
@@ -64,6 +69,7 @@ public class CategoryService {
         Category findCategory = findCategoryOp.orElseThrow(() -> {
             throw new NoSuchElementException(id.toString());
         });
+
         this.existCategory(findCategory.getDepth(), category.getName());
 
         findCategory.updateCategoryName(category.getName());
@@ -72,11 +78,9 @@ public class CategoryService {
     @Transactional
     public void deleteCategory(Long id) {
         Optional<Category> findCategoryOp = categoryRepository.findById(id);
-        Category category = findCategoryOp.orElseThrow(() -> {
-            throw new NoSuchElementException(id.toString());
-        });
+        if (findCategoryOp.isEmpty()) throw new NoSuchElementException(id.toString());
+
         categoryRepository.deleteById(id);
-        categoryRepository.deleteByParentId(category.getId());
     }
 
     private void existCategory(int depth, String categoryName) {
