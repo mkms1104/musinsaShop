@@ -8,17 +8,14 @@ import com.musinsa.shop.webapi.dto.CategoryResponseDto;
 import com.musinsa.shop.webapi.dto.CategoryUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.ValidationException;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -35,22 +32,12 @@ public class CategoryService {
         Optional<Category> findCategoryOp = categoryRepository.findById(parentId);
         if (findCategoryOp.isEmpty()) throw new NoSuchElementException(parentId.toString());
 
-        Page<Category> findCategoriesWithPage = categoryRepository.findByParentId(parentId, pageable);
-        return categoryResponseDtoBasedPage(findCategoriesWithPage, pageable);
+        return categoryRepository.findByParentId(parentId, pageable).map(CategoryMapper.INSTANCE::toResponseDto);
     }
 
     // 전체 카테고리 조회
     private Page<CategoryResponseDto> getAllCategories(Pageable pageable) {
-        Page<Category> allCategoriesWithPage = categoryRepository.findAll(pageable);
-        return categoryResponseDtoBasedPage(allCategoriesWithPage, pageable);
-    }
-
-    private PageImpl<CategoryResponseDto> categoryResponseDtoBasedPage(Page<Category> categoriesWithPage, Pageable pageable) {
-        List<CategoryResponseDto> categories = categoriesWithPage.stream()
-                .map(v -> CategoryMapper.INSTANCE.toResponseDto(v))
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(categories, pageable, categoriesWithPage.getTotalPages());
+        return categoryRepository.findAll(pageable).map(CategoryMapper.INSTANCE::toResponseDto);
     }
 
     @Transactional
