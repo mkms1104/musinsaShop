@@ -30,14 +30,14 @@ public class CategoryApiController {
 
     @PostMapping
     public ResponseEntity<Void> createCategory(@Valid @RequestBody CategoryCreateDto dto) {
-        Category savedCategory = categoryService.createCategory(dto.toEntity());
+        Category savedCategory = categoryService.createCategory(dto);
         URI uri = WebMvcLinkBuilder.linkTo(CategoryApiController.class).slash(savedCategory.getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
 
     @PatchMapping("{category_id}")
     public ResponseEntity<Void> updateCategory(@PathVariable("category_id") Long id, @Valid @RequestBody CategoryUpdateDto dto) {
-        categoryService.updateCategoryName(id, dto.toEntity());
+        categoryService.updateCategoryName(id, dto);
         return ResponseEntity.ok().build();
     }
 

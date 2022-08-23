@@ -16,7 +16,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UpdateCategoryApiTest extends MockMvcTestSupport {
-    @Autowired private CategoryRepository categoryRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     private final String URI = "/api/v1/mshop/categories/{category_id}";
 
@@ -38,8 +39,8 @@ public class UpdateCategoryApiTest extends MockMvcTestSupport {
         categoryRepository.save(new Category("겨울 싱글 코트", 2, category03.getId()));
     }
 
-    @Test
     @DisplayName("카테고리명 정상 업데이트")
+    @Test
     void updateCategory01() throws Exception {
         //given
         long categoryId = 1L; // 1뎁스 카테고리 ID
@@ -48,16 +49,15 @@ public class UpdateCategoryApiTest extends MockMvcTestSupport {
 
         //when & then
         mockMvc.perform(
-                    patch(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
-                    .content(jsonObject.toString())
+                        patch(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonObject.toString())
                 )
                 .andDo(print())
-                .andExpect(status().isOk())
-        ;
+                .andExpect(status().isOk());
     }
 
-    @Test
     @DisplayName("수정하려는 카테고리명을 입력하지 않았을 경우 400 응답을 리턴한다.")
+    @Test
     void updateCategory02() throws Exception {
         //given
         long categoryId = 1L; // 1뎁스 카테고리 ID
@@ -65,18 +65,17 @@ public class UpdateCategoryApiTest extends MockMvcTestSupport {
 
         //when & then
         mockMvc.perform(
-                    patch(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
-                    .content(jsonObject.toString())
+                        patch(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonObject.toString())
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorType", is("INVALID_PARAMETER")))
-                .andExpect(jsonPath("$.msg", is("name param is null")))
-        ;
+                .andExpect(jsonPath("$.msg", is("name param is null")));
     }
 
-    @Test
     @DisplayName("수정하려는 카테고리명이 동일한 뎁스에 이미 존재할 경우 400 응답을 리턴한다.")
+    @Test
     void updateCategory03() throws Exception {
         //given
         JsonObject jsonObject = new JsonObject();
@@ -84,18 +83,17 @@ public class UpdateCategoryApiTest extends MockMvcTestSupport {
 
         //when & then
         mockMvc.perform(
-                    patch(URI, 1).contentType(MediaType.APPLICATION_JSON)
-                    .content(jsonObject.toString())
+                        patch(URI, 1).contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonObject.toString())
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorType", is("NOT_VALID")))
-                .andExpect(jsonPath("$.msg", is("category name is duplicated")))
-        ;
+                .andExpect(jsonPath("$.msg", is("category name is duplicated")));
     }
 
-    @Test
     @DisplayName("수정하려는 카테고리명이 다른 뎁스에 존재할 경우 정상 업데이트한다.")
+    @Test
     void updateCategory04() throws Exception {
         //given
         Long categoryId = 2L; // 2뎁스 카테고리 ID
@@ -104,16 +102,15 @@ public class UpdateCategoryApiTest extends MockMvcTestSupport {
 
         //when & then
         mockMvc.perform(
-                    patch(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
-                    .content(jsonObject.toString())
+                        patch(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonObject.toString())
                 )
                 .andDo(print())
-                .andExpect(status().isOk())
-        ;
+                .andExpect(status().isOk());
     }
 
-    @Test
     @DisplayName("존재하지 않는 카테고리 id를 수정 요청한 경우 400 응답을 리턴한다.")
+    @Test
     void updateCategory05() throws Exception {
         //given
         long categoryId = 123L;
@@ -122,14 +119,13 @@ public class UpdateCategoryApiTest extends MockMvcTestSupport {
 
         //when & then
         mockMvc.perform(
-                    patch(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
-                    .content(jsonObject.toString())
+                        patch(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonObject.toString())
 
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorType", is("NO_DATA_FOUND")))
-                .andExpect(jsonPath("$.msg", is("no data found exception with " + categoryId)))
-        ;
+                .andExpect(jsonPath("$.msg", is("no data found exception with " + categoryId)));
     }
 }

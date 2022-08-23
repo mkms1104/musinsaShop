@@ -19,7 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class DeleteCategoryApiTest extends MockMvcTestSupport {
-    @Autowired private CategoryRepository categoryRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     private final String URI = "/api/v1/mshop/categories/{category_id}";
 
@@ -41,15 +42,15 @@ public class DeleteCategoryApiTest extends MockMvcTestSupport {
         categoryRepository.save(new Category("겨울 싱글 코트", 2, category03.getId()));
     }
 
-    @Test
     @DisplayName("카테고리 정상 삭제")
+    @Test
     void deleteCategory01() throws Exception {
         //given
         long categoryId = 2L;
 
         //when & then
         mockMvc.perform(
-                    delete(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
+                        delete(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -59,15 +60,15 @@ public class DeleteCategoryApiTest extends MockMvcTestSupport {
         assertEquals(8, categoryRepository.findAll().size());
     }
 
-    @Test
     @DisplayName("부모 카테고리를 삭제할 경우 자식 카테고리도 삭제되어야 한다.")
+    @Test
     void deleteCategory02() throws Exception {
         //given
         long categoryId = 1L;
 
         //when
         mockMvc.perform(
-                    delete(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
+                        delete(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -78,15 +79,15 @@ public class DeleteCategoryApiTest extends MockMvcTestSupport {
         assertTrue(findChildCategories.isEmpty());
     }
 
-    @Test
     @DisplayName("존재하지 않는 카테고리 id를 삭제 요청한 경우 400 응답을 리턴한다.")
+    @Test
     void deleteCategory03() throws Exception {
         //given
         long categoryId = 123L;
 
         //when & then
         mockMvc.perform(
-                    delete(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
+                        delete(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest())

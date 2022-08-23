@@ -32,8 +32,8 @@ public class GetCategoryServiceTest {
     @Mock
     private CategoryRepository categoryRepository;
 
-    @Test
     @DisplayName("부모 카테고리 id 값을 지정하지 않는 경우 모든 카테고리를 조회한다.")
+    @Test
     void getAllCategory() {
         //given
         List<Category> categories = List.of(
@@ -49,7 +49,7 @@ public class GetCategoryServiceTest {
         );
 
         given(categoryRepository.findAll(any(PageRequest.class)))
-        .willAnswer(invocation -> new PageImpl<>(categories, invocation.getArgument(0), categories.size()));
+                .willAnswer(invocation -> new PageImpl<>(categories, invocation.getArgument(0), categories.size()));
 
         //when
         PageRequest pageRequest = PageRequest.of(0, 5);
@@ -63,8 +63,8 @@ public class GetCategoryServiceTest {
         assertEquals(9, page.getNumberOfElements());
     }
 
-    @Test
     @DisplayName("지정한 부모 카테고리의 모든 하위 카테고리를 조회한다.")
+    @Test
     void getCategory() {
         //given
         List<Category> categories = List.of(
@@ -101,8 +101,8 @@ public class GetCategoryServiceTest {
         assertEquals(4, page.getNumberOfElements());
     }
 
-    @Test
     @DisplayName("PageImpl 동작 테스트")
+    @Test
     void pageImpl() {
         List<Category> categories = List.of(
                 new Category("상의", 1),
