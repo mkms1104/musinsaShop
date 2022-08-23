@@ -5,7 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.musinsa.shop.domain.category.Category;
 import com.musinsa.shop.domain.category.CategoryRepository;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +23,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class GetCategoryApiTest extends MockMvcTestSupport {
+    private final String URI = "/api/v1/mshop/categories";
+
     @Autowired
     private CategoryRepository categoryRepository;
 
-    private final String URI = "/api/v1/mshop/categories";
-
-    @BeforeEach
-    void init() {
+    @BeforeAll
+    static void init(@Autowired CategoryRepository categoryRepository) {
         // ID = 1
         Category category01 = categoryRepository.save(new Category("상의", 1));
         categoryRepository.save(new Category("반소매 티셔츠", 2, category01.getId()));
@@ -45,23 +45,28 @@ public class GetCategoryApiTest extends MockMvcTestSupport {
         categoryRepository.save(new Category("레깅스", 2, category02.getId()));
         categoryRepository.save(new Category("점프 슡/오버올", 2, category02.getId()));
         categoryRepository.save(new Category("기타 바지", 2, category02.getId()));
+        categoryRepository.save(new Category("피아노 바지", 2, category02.getId()));
+        categoryRepository.save(new Category("냉장고 바지", 2, category02.getId()));
+        categoryRepository.save(new Category("바이올린 바지", 2, category02.getId()));
 
         // ID = 7
         Category category03 = categoryRepository.save(new Category("아우터", 1));
         categoryRepository.save(new Category("카디건", 2, category03.getId()));
         categoryRepository.save(new Category("겨울 싱글 코트", 2, category03.getId()));
+
+        Category category04 = categoryRepository.save(new Category("신발", 1));
     }
 
     @DisplayName("페이징 파라미터에 따라 올바르게 조회힌다.")
     @Test
     void getCategories01() throws Exception {
         //given
-        long categoryId = 4L; // parentId
+        Category category = categoryRepository.findByName("바지").get();
 
         //when & then
         MvcResult mvcResult = mockMvc.perform(
                         get(URI).contentType(MediaType.APPLICATION_JSON)
-                                .queryParam("category_id", Long.toString(categoryId))
+                                .queryParam("category_id", Long.toString(category.getId()))
                                 .queryParam("page", "0")
                                 .queryParam("size", "5")
                 )
@@ -79,12 +84,12 @@ public class GetCategoryApiTest extends MockMvcTestSupport {
     @Test
     void getCategories02() throws Exception {
         //given
-        long categoryId = 4L; // parentId
+        Category category = categoryRepository.findByName("바지").get();
 
         //when & then
         MvcResult mvcResult = mockMvc.perform(
                         get(URI).contentType(MediaType.APPLICATION_JSON)
-                                .queryParam("category_id", Long.toString(categoryId))
+                                .queryParam("category_id", Long.toString(category.getId()))
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -93,7 +98,7 @@ public class GetCategoryApiTest extends MockMvcTestSupport {
         String result = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
         JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
         JsonArray content = jsonObject.getAsJsonArray("content");
-        assertEquals(8, content.size());
+        assertEquals(10, content.size());
     }
 
     @DisplayName("존재하지 않는 카테고리 id를 넘길 경우 400 응답을 리턴한다.")
@@ -117,12 +122,12 @@ public class GetCategoryApiTest extends MockMvcTestSupport {
     @Test
     void getCategories04() throws Exception {
         //given
-        long categoryId = 2L; // parentId
+        Category category = categoryRepository.findByName("신발").get();
 
         //when & then
         MvcResult mvcResult = mockMvc.perform(
                         get(URI).contentType(MediaType.APPLICATION_JSON)
-                                .queryParam("category_id", Long.toString(categoryId))
+                                .queryParam("category_id", Long.toString(category.getId()))
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -151,6 +156,6 @@ public class GetCategoryApiTest extends MockMvcTestSupport {
         String result = mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
         JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
         JsonArray content = jsonObject.getAsJsonArray("content");
-        assertEquals(15, content.size());
+        assertEquals(categoryRepository.findAll().size(), content.size());
     }
 }

@@ -1,13 +1,9 @@
 plugins {
     id 'org.springframework.boot' version '2.7.2'
     id 'io.spring.dependency-management' version '1.0.12.RELEASE'
-    id 'org.asciidoctor.convert' version '1.5.8'
+    id 'application'
     id 'java-library'
 }
-
-group = 'com.musinsa.shop'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
 
 configurations {
     compileOnly {
@@ -22,9 +18,16 @@ allprojects {
 }
 
 subprojects {
+    group = 'com.musinsa.shop'
+    version = '0.0.1-SNAPSHOT'
+
+    apply plugin: 'application'
     apply plugin: 'java-library'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
+
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 
     dependencies {
         developmentOnly 'org.springframework.boot:spring-boot-devtools'

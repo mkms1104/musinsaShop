@@ -1,6 +1,4 @@
-bootJar {
-    archiveFileName = 'musinsa-shop-web-api-0.0.1.jar'
-}
+jar.enabled = false
 
 ext {
     mapstructVersion = "1.5.2.Final"

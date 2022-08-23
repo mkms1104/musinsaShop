@@ -3,11 +3,15 @@ package com.musinsa.shop.webapi.controller;
 import com.google.gson.JsonObject;
 import com.musinsa.shop.domain.category.Category;
 import com.musinsa.shop.domain.category.CategoryRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+
+import java.util.NoSuchElementException;
+import java.util.Objects;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -15,14 +19,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class UpdateCategoryApiTest extends MockMvcTestSupport {
     @Autowired
     private CategoryRepository categoryRepository;
 
     private final String URI = "/api/v1/mshop/categories/{category_id}";
 
+    @AfterEach
+    void clean() {
+        categoryRepository.deleteAll();
+    }
+
     @BeforeEach
     void init() {
+        categoryRepository.deleteAll();
+
         // ID = 1
         Category category01 = categoryRepository.save(new Category("상의", 1));
         categoryRepository.save(new Category("반소매 티셔츠", 2, category01.getId()));
@@ -42,14 +54,19 @@ public class UpdateCategoryApiTest extends MockMvcTestSupport {
     @DisplayName("카테고리명 정상 업데이트")
     @Test
     void updateCategory01() throws Exception {
+
+
         //given
-        long categoryId = 1L; // 1뎁스 카테고리 ID
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("name", "가방");
 
+        Category category = categoryRepository.findAll().stream().findAny().orElseThrow(() -> {
+            throw new NoSuchElementException();
+        });
+
         //when & then
         mockMvc.perform(
-                        patch(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
+                        patch(URI, category.getId()).contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonObject.toString())
                 )
                 .andDo(print())
@@ -81,9 +98,14 @@ public class UpdateCategoryApiTest extends MockMvcTestSupport {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("name", "바지"); // 1뎁스 카테고리에 바지라는 명칭이 이미 존재한다.
 
+        Integer depth = categoryRepository.findByName("바지").get().getDepth();
+        Category category = categoryRepository.findAll().stream().filter(v -> Objects.equals(depth, v.getDepth())).findFirst().orElseThrow(() -> {
+            throw new NoSuchElementException();
+        });
+
         //when & then
         mockMvc.perform(
-                        patch(URI, 1).contentType(MediaType.APPLICATION_JSON)
+                        patch(URI, category.getId()).contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonObject.toString())
                 )
                 .andDo(print())
@@ -96,13 +118,18 @@ public class UpdateCategoryApiTest extends MockMvcTestSupport {
     @Test
     void updateCategory04() throws Exception {
         //given
-        Long categoryId = 2L; // 2뎁스 카테고리 ID
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("name", "바지"); // 2뎁스 카테고리에 바지라는 명칭은 없다.
 
+        Integer depth = categoryRepository.findByName("바지").get().getDepth();
+        Category category = categoryRepository.findAll().stream().filter(v -> !Objects.equals(depth, v.getDepth())).findFirst().orElseThrow(() -> {
+            throw new NoSuchElementException();
+        });
+
+
         //when & then
         mockMvc.perform(
-                        patch(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
+                        patch(URI, category.getId()).contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonObject.toString())
                 )
                 .andDo(print())

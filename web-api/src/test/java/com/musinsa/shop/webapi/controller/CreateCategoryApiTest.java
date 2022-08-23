@@ -3,6 +3,7 @@ package com.musinsa.shop.webapi.controller;
 import com.google.gson.JsonObject;
 import com.musinsa.shop.domain.category.Category;
 import com.musinsa.shop.domain.category.CategoryRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,11 @@ public class CreateCategoryApiTest extends MockMvcTestSupport {
     private CategoryRepository categoryRepository;
 
     private final String URI = "/api/v1/mshop/categories";
+
+    @BeforeEach
+    void clean() {
+        categoryRepository.deleteAll();
+    }
 
     @DisplayName("카테고리 정상 등록")
     @Test

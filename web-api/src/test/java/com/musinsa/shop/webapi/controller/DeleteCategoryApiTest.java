@@ -2,6 +2,7 @@ package com.musinsa.shop.webapi.controller;
 
 import com.musinsa.shop.domain.category.Category;
 import com.musinsa.shop.domain.category.CategoryRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+
+import java.util.NoSuchElementException;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,15 +45,21 @@ public class DeleteCategoryApiTest extends MockMvcTestSupport {
         categoryRepository.save(new Category("겨울 싱글 코트", 2, category03.getId()));
     }
 
+    @AfterEach
+    void clean() {
+        categoryRepository.deleteAll();
+    }
+
     @DisplayName("카테고리 정상 삭제")
     @Test
     void deleteCategory01() throws Exception {
         //given
-        long categoryId = 2L;
+        assertEquals(9, categoryRepository.findAll().size());
+        Category category = categoryRepository.findByName("카디건").get();
 
         //when & then
         mockMvc.perform(
-                        delete(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
+                        delete(URI, category.getId()).contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -64,18 +73,20 @@ public class DeleteCategoryApiTest extends MockMvcTestSupport {
     @Test
     void deleteCategory02() throws Exception {
         //given
-        long categoryId = 1L;
+        Category category = categoryRepository.findAll().stream().filter(Category::isRoot).findFirst().orElseThrow(() -> {
+            throw new NoSuchElementException();
+        });
 
         //when
         mockMvc.perform(
-                        delete(URI, categoryId).contentType(MediaType.APPLICATION_JSON)
+                        delete(URI, category.getId()).contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
         ;
 
         //then
-        Page<Category> findChildCategories = categoryRepository.findByParentId(categoryId, Pageable.ofSize(10));
+        Page<Category> findChildCategories = categoryRepository.findByParentId(category.getId(), Pageable.ofSize(10));
         assertTrue(findChildCategories.isEmpty());
     }
 
