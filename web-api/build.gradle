@@ -1,3 +1,7 @@
+bootJar {
+    archiveFileName = 'musinsa-shop-web-api-0.0.1.jar'
+}
+
 ext {
     mapstructVersion = "1.5.2.Final"
     gsonVersion = "2.9.0"
@@ -7,6 +11,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 
     implementation "com.google.code.gson:gson:$gsonVersion"

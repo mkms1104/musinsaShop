@@ -23,7 +23,10 @@ public class CategoryApiController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<Page<CategoryResponseDto>> getCategory(@RequestParam(value = "category_id", required = false) Long id, @PageableDefault(sort = "name") Pageable pageable) {
+    public ResponseEntity<Page<CategoryResponseDto>> getCategory(
+            @RequestParam(value = "category_id", required = false) Long id,
+            @PageableDefault(sort = "name") Pageable pageable
+    ) {
         Page<CategoryResponseDto> categoriesWithPage = categoryService.getCategory(id, pageable);
         return ResponseEntity.ok(categoriesWithPage);
     }
