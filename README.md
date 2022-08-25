@@ -25,7 +25,7 @@ Rest API 기반 온라인 쇼핑몰 상품 카테고리 기능 구현
 
 * 빌드
 ```c
-./gradlew clean web-api:build -x test
+./gradlew clean web-api:build
 ```
 
 * 실행
